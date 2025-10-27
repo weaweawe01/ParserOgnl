@@ -133,10 +133,6 @@ AST (抽象语法树)
 
 
 
-## 许可证
-
-本项目采用 Apache License 2.0 许可证。详见 [LICENSE](../LICENSE.txt) 文件。
-
 ## 致谢
 
 - 感谢 [Apache OGNL](https://github.com/orphan-oss/ognl) 项目提供原始实现
@@ -148,10 +144,7 @@ AST (抽象语法树)
 - 讨论区: [GitHub Discussions](https://github.com/weaweawe01/ParserOgnl/discussions)
 
 ## 参考资源
-
 - [Apache OGNL 官方文档](https://commons.apache.org/proper/commons-ognl/)
-- [OGNL 语言指南](../docs/LanguageGuide.md)
-- [OGNL 开发者指南](../docs/DeveloperGuide.md)
 
 ---
 
