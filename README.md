@@ -144,8 +144,8 @@ AST (抽象语法树)
 
 ## 联系方式
 
-- 问题反馈: [GitHub Issues](https://github.com/yourusername/go_ognl/issues)
-- 讨论区: [GitHub Discussions](https://github.com/yourusername/go_ognl/discussions)
+- 问题反馈: [GitHub Issues](https://github.com/weaweawe01/ParserOgnl/issues)
+- 讨论区: [GitHub Discussions](https://github.com/weaweawe01/ParserOgnl/discussions)
 
 ## 参考资源
 
