@@ -245,22 +245,6 @@ AST (抽象语法树)
 - ✅ 类型转换和泛型
 - ✅ 异常情况和边界条件
 
-### 运行所有测试
-
-```bash
-cd tests
-go test -v
-```
-
-### 查看测试覆盖率
-
-```bash
-go test -cover
-go test -coverprofile=coverage.out
-go tool cover -html=coverage.out
-```
-
----
 
 **注意**: 本项目仍在积极开发中。欢迎提交问题和建议！
 
