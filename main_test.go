@@ -5,10 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/weaweawe01/ParserOgnl/lexer"
-	"github.com/weaweawe01/ParserOgnl/parser"
-	"github.com/weaweawe01/ParserOgnl/token"
-
 	"github.com/weaweawe01/ParserOgnl/ast"
 )
 
@@ -32,11 +28,11 @@ func printASTForTest(expr ast.Expression, depth int) string {
 
 	switch node := expr.(type) {
 	case *ast.BinaryExpression:
-		result.WriteString(fmt.Sprintf("%s%s(%s)\n", indent, node.Type(), token.TokenTypeNames[node.Operator]))
+		result.WriteString(fmt.Sprintf("%s%s(%s)\n", indent, node.Type(), ast.TokenTypeNames[node.Operator]))
 		result.WriteString(printASTForTest(node.Left, depth+1))
 		result.WriteString(printASTForTest(node.Right, depth+1))
 	case *ast.UnaryExpression:
-		result.WriteString(fmt.Sprintf("%s%s(%s)\n", indent, node.Type(), token.TokenTypeNames[node.Operator]))
+		result.WriteString(fmt.Sprintf("%s%s(%s)\n", indent, node.Type(), ast.TokenTypeNames[node.Operator]))
 		result.WriteString(printASTForTest(node.Operand, depth+1))
 	case *ast.Literal:
 		result.WriteString(fmt.Sprintf("%s%s(%v)\n", indent, node.Type(), node.Value))
@@ -89,8 +85,8 @@ func printASTForTest(expr ast.Expression, depth int) string {
 // 辅助函数：执行表达式解析测试
 func testExpression(t *testing.T, test ExpressionTest) {
 	t.Run(test.description, func(t *testing.T) {
-		l := lexer.NewLexer(test.input)
-		p := parser.New(l)
+		l := ast.NewLexer(test.input)
+		p := ast.New(l)
 
 		expr, err := p.ParseTopLevelExpression()
 

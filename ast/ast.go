@@ -3,12 +3,10 @@ package ast
 import (
 	"fmt"
 	"strings"
-
-	"github.com/weaweawe01/ParserOgnl/token"
 )
 
 func Version() string {
-	return "v1.0.0"
+	return "v1.0.1"
 }
 
 // Node AST节点接口
@@ -116,7 +114,7 @@ func (ce *ConditionalExpression) Type() string { return "ASTTest" }
 type BinaryExpression struct {
 	BaseExpression
 	Left     Expression
-	Operator token.TokenType
+	Operator TokenType
 	Right    Expression
 }
 
@@ -180,25 +178,25 @@ func (be *BinaryExpression) StringWithContext(parentPrecedence int, isRightChild
 // operatorPrecedence 返回运算符优先级 (数字越大优先级越高)
 func (be *BinaryExpression) operatorPrecedence() int {
 	switch be.Operator {
-	case token.OR:
+	case OR:
 		return 1
-	case token.AND:
+	case AND:
 		return 2
-	case token.BIT_OR:
+	case BIT_OR:
 		return 3
-	case token.XOR:
+	case XOR:
 		return 4
-	case token.BIT_AND:
+	case BIT_AND:
 		return 5
-	case token.EQ, token.NOT_EQ:
+	case EQ, NOT_EQ:
 		return 6
-	case token.LT, token.GT, token.LT_EQ, token.GT_EQ, token.IN, token.NOT_IN, token.INSTANCEOF:
+	case LT, GT, LT_EQ, GT_EQ, IN, NOT_IN, INSTANCEOF:
 		return 7
-	case token.SHL, token.SHR, token.USHR:
+	case SHL, SHR, USHR:
 		return 8
-	case token.PLUS, token.MINUS:
+	case PLUS, MINUS:
 		return 9
-	case token.MULTIPLY, token.DIVIDE, token.MODULO:
+	case MULTIPLY, DIVIDE, MODULO:
 		return 10
 	default:
 		return 0
@@ -218,47 +216,47 @@ func (be *BinaryExpression) isLeftAssociative() bool {
 
 func (be *BinaryExpression) operatorString() string {
 	switch be.Operator {
-	case token.OR:
+	case OR:
 		return "||"
-	case token.AND:
+	case AND:
 		return "&&"
-	case token.BIT_OR:
+	case BIT_OR:
 		return "|"
-	case token.XOR:
+	case XOR:
 		return "^"
-	case token.BIT_AND:
+	case BIT_AND:
 		return "&"
-	case token.EQ:
+	case EQ:
 		return "=="
-	case token.NOT_EQ:
+	case NOT_EQ:
 		return "!="
-	case token.LT:
+	case LT:
 		return "<"
-	case token.GT:
+	case GT:
 		return ">"
-	case token.LT_EQ:
+	case LT_EQ:
 		return "<="
-	case token.GT_EQ:
+	case GT_EQ:
 		return ">="
-	case token.IN:
+	case IN:
 		return "in"
-	case token.NOT_IN:
+	case NOT_IN:
 		return "not in"
-	case token.SHL:
+	case SHL:
 		return "<<"
-	case token.SHR:
+	case SHR:
 		return ">>"
-	case token.USHR:
+	case USHR:
 		return ">>>"
-	case token.PLUS:
+	case PLUS:
 		return "+"
-	case token.MINUS:
+	case MINUS:
 		return "-"
-	case token.MULTIPLY:
+	case MULTIPLY:
 		return "*"
-	case token.DIVIDE:
+	case DIVIDE:
 		return "/"
-	case token.MODULO:
+	case MODULO:
 		return "%"
 	default:
 		return "UNKNOWN"
@@ -267,49 +265,49 @@ func (be *BinaryExpression) operatorString() string {
 
 func (be *BinaryExpression) Type() string {
 	switch be.Operator {
-	case token.PLUS:
+	case PLUS:
 		return "ASTAdd"
-	case token.MINUS:
+	case MINUS:
 		return "ASTSubtract"
-	case token.MULTIPLY:
+	case MULTIPLY:
 		return "ASTMultiply"
-	case token.DIVIDE:
+	case DIVIDE:
 		return "ASTDivide"
-	case token.MODULO:
+	case MODULO:
 		return "ASTRemainder"
-	case token.EQ:
+	case EQ:
 		return "ASTEq"
-	case token.NOT_EQ:
+	case NOT_EQ:
 		return "ASTNotEq"
-	case token.LT:
+	case LT:
 		return "ASTLess"
-	case token.LT_EQ:
+	case LT_EQ:
 		return "ASTLessEq"
-	case token.GT:
+	case GT:
 		return "ASTGreater"
-	case token.GT_EQ:
+	case GT_EQ:
 		return "ASTGreaterEq"
-	case token.AND:
+	case AND:
 		return "ASTAnd"
-	case token.OR:
+	case OR:
 		return "ASTOr"
-	case token.BIT_AND:
+	case BIT_AND:
 		return "ASTBitAnd"
-	case token.BIT_OR:
+	case BIT_OR:
 		return "ASTBitOr"
-	case token.XOR:
+	case XOR:
 		return "ASTXor"
-	case token.SHL:
+	case SHL:
 		return "ASTShiftLeft"
-	case token.SHR:
+	case SHR:
 		return "ASTShiftRight"
-	case token.USHR:
+	case USHR:
 		return "ASTUnsignedShiftRight"
-	case token.IN:
+	case IN:
 		return "ASTIn"
-	case token.NOT_IN:
+	case NOT_IN:
 		return "ASTNotIn"
-	case token.INSTANCEOF:
+	case INSTANCEOF:
 		return "ASTInstanceof"
 	default:
 		return "BinaryExpression"
@@ -319,7 +317,7 @@ func (be *BinaryExpression) Type() string {
 // UnaryExpression 一元表达式
 type UnaryExpression struct {
 	BaseExpression
-	Operator token.TokenType
+	Operator TokenType
 	Operand  Expression
 }
 
@@ -336,13 +334,13 @@ func (ue *UnaryExpression) String() string {
 
 func (ue *UnaryExpression) operatorString() string {
 	switch ue.Operator {
-	case token.MINUS:
+	case MINUS:
 		return "-"
-	case token.PLUS:
+	case PLUS:
 		return "+"
-	case token.BIT_NOT:
+	case BIT_NOT:
 		return "~"
-	case token.NOT:
+	case NOT:
 		return "!"
 	default:
 		return "UNKNOWN"
@@ -351,13 +349,13 @@ func (ue *UnaryExpression) operatorString() string {
 
 func (ue *UnaryExpression) Type() string {
 	switch ue.Operator {
-	case token.MINUS:
+	case MINUS:
 		return "ASTNegate"
-	case token.NOT:
+	case NOT:
 		return "ASTNot"
-	case token.BIT_NOT:
+	case BIT_NOT:
 		return "ASTBitNegate"
-	case token.PLUS:
+	case PLUS:
 		return "ASTConst"
 	default:
 		return "UnaryExpression"
@@ -847,19 +845,19 @@ func (me *MapExpression) Type() string { return "ASTMap" }
 type DynamicSubscriptExpression struct {
 	BaseExpression
 	Object        Expression
-	SubscriptType token.DynamicSubscriptType
+	SubscriptType DynamicSubscriptType
 }
 
 func (dse *DynamicSubscriptExpression) String() string {
 	var symbol string
 	switch dse.SubscriptType {
-	case token.FIRST:
+	case FIRST:
 		symbol = "^"
-	case token.MID:
+	case MID:
 		symbol = "|"
-	case token.LAST:
+	case LAST:
 		symbol = "$"
-	case token.ALL:
+	case ALL:
 		symbol = "*"
 	}
 	if dse.Object != nil {

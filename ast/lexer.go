@@ -1,10 +1,8 @@
-package lexer
+package ast
 
 import (
 	"strconv"
 	"strings"
-
-	"github.com/weaweawe01/ParserOgnl/token"
 )
 
 // Lexer 词法分析器
@@ -188,126 +186,126 @@ func (l *Lexer) readBackCharLiteral() string {
 }
 
 // NextToken 扫描输入并返回下一个token
-func (l *Lexer) NextToken() token.Token {
-	var tok token.Token
+func (l *Lexer) NextToken() Token {
+	var tok Token
 
 	l.skipWhitespace()
 
 	switch l.ch {
 	case 0:
-		tok = token.Token{Type: token.EOF, Value: "", Line: l.line, Column: l.column}
+		tok = Token{Type: EOF, Value: "", Line: l.line, Column: l.column}
 		return tok // 不调用 readChar，因为已经在 EOF
 	case '+':
-		tok = token.Token{Type: token.PLUS, Value: "+", Line: l.line, Column: l.column}
+		tok = Token{Type: PLUS, Value: "+", Line: l.line, Column: l.column}
 	case '-':
-		tok = token.Token{Type: token.MINUS, Value: "-", Line: l.line, Column: l.column}
+		tok = Token{Type: MINUS, Value: "-", Line: l.line, Column: l.column}
 	case '*':
-		tok = token.Token{Type: token.MULTIPLY, Value: "*", Line: l.line, Column: l.column}
+		tok = Token{Type: MULTIPLY, Value: "*", Line: l.line, Column: l.column}
 	case '/':
-		tok = token.Token{Type: token.DIVIDE, Value: "/", Line: l.line, Column: l.column}
+		tok = Token{Type: DIVIDE, Value: "/", Line: l.line, Column: l.column}
 	case '%':
-		tok = token.Token{Type: token.MODULO, Value: "%", Line: l.line, Column: l.column}
+		tok = Token{Type: MODULO, Value: "%", Line: l.line, Column: l.column}
 	case '=':
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else {
-			tok = token.Token{Type: token.ASSIGN, Value: "=", Line: l.line, Column: l.column}
+			tok = Token{Type: ASSIGN, Value: "=", Line: l.line, Column: l.column}
 		}
 	case '!':
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.NOT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: NOT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else {
-			tok = token.Token{Type: token.NOT, Value: "!", Line: l.line, Column: l.column}
+			tok = Token{Type: NOT, Value: "!", Line: l.line, Column: l.column}
 		}
 	case '<':
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.LT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: LT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else if l.peekChar() == '<' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.SHL, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: SHL, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else {
-			tok = token.Token{Type: token.LT, Value: "<", Line: l.line, Column: l.column}
+			tok = Token{Type: LT, Value: "<", Line: l.line, Column: l.column}
 		}
 	case '>':
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.GT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: GT_EQ, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else if l.peekChar() == '>' {
 			l.readChar()
 			if l.peekChar() == '>' {
 				l.readChar()
-				tok = token.Token{Type: token.USHR, Value: ">>>", Line: l.line, Column: l.column}
+				tok = Token{Type: USHR, Value: ">>>", Line: l.line, Column: l.column}
 			} else {
-				tok = token.Token{Type: token.SHR, Value: ">>", Line: l.line, Column: l.column}
+				tok = Token{Type: SHR, Value: ">>", Line: l.line, Column: l.column}
 			}
 		} else {
-			tok = token.Token{Type: token.GT, Value: ">", Line: l.line, Column: l.column}
+			tok = Token{Type: GT, Value: ">", Line: l.line, Column: l.column}
 		}
 	case '&':
 		if l.peekChar() == '&' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.AND, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: AND, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else {
-			tok = token.Token{Type: token.BIT_AND, Value: "&", Line: l.line, Column: l.column}
+			tok = Token{Type: BIT_AND, Value: "&", Line: l.line, Column: l.column}
 		}
 	case '|':
 		if l.peekChar() == '|' {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.OR, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: OR, Value: string(ch) + string(l.ch), Line: l.line, Column: l.column}
 		} else {
-			tok = token.Token{Type: token.BIT_OR, Value: "|", Line: l.line, Column: l.column}
+			tok = Token{Type: BIT_OR, Value: "|", Line: l.line, Column: l.column}
 		}
 	case '^':
-		tok = token.Token{Type: token.XOR, Value: "^", Line: l.line, Column: l.column}
+		tok = Token{Type: XOR, Value: "^", Line: l.line, Column: l.column}
 	case '~':
-		tok = token.Token{Type: token.BIT_NOT, Value: "~", Line: l.line, Column: l.column}
+		tok = Token{Type: BIT_NOT, Value: "~", Line: l.line, Column: l.column}
 	case '(':
-		tok = token.Token{Type: token.LPAREN, Value: "(", Line: l.line, Column: l.column}
+		tok = Token{Type: LPAREN, Value: "(", Line: l.line, Column: l.column}
 	case ')':
-		tok = token.Token{Type: token.RPAREN, Value: ")", Line: l.line, Column: l.column}
+		tok = Token{Type: RPAREN, Value: ")", Line: l.line, Column: l.column}
 	case '[':
-		tok = token.Token{Type: token.LBRACK, Value: "[", Line: l.line, Column: l.column}
+		tok = Token{Type: LBRACK, Value: "[", Line: l.line, Column: l.column}
 	case ']':
-		tok = token.Token{Type: token.RBRACK, Value: "]", Line: l.line, Column: l.column}
+		tok = Token{Type: RBRACK, Value: "]", Line: l.line, Column: l.column}
 	case '{':
-		tok = token.Token{Type: token.LBRACE, Value: "{", Line: l.line, Column: l.column}
+		tok = Token{Type: LBRACE, Value: "{", Line: l.line, Column: l.column}
 	case '}':
-		tok = token.Token{Type: token.RBRACE, Value: "}", Line: l.line, Column: l.column}
+		tok = Token{Type: RBRACE, Value: "}", Line: l.line, Column: l.column}
 	case ',':
-		tok = token.Token{Type: token.COMMA, Value: ",", Line: l.line, Column: l.column}
+		tok = Token{Type: COMMA, Value: ",", Line: l.line, Column: l.column}
 	case '.':
 		// 检查 . 后面是否跟着数字，如果是则识别为浮点数
 		if l.position+1 < len(l.input) && isDigit(l.input[l.position+1]) {
 			// 这是一个以 . 开头的浮点数，如 .1234
 			value, tokenType := l.readNumber()
-			tok = token.Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
+			tok = Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
 			return tok // 不调用 readChar，因为 readNumber 已经移动了指针
 		}
-		tok = token.Token{Type: token.DOT, Value: ".", Line: l.line, Column: l.column}
+		tok = Token{Type: DOT, Value: ".", Line: l.line, Column: l.column}
 	case ':':
-		tok = token.Token{Type: token.COLON, Value: ":", Line: l.line, Column: l.column}
+		tok = Token{Type: COLON, Value: ":", Line: l.line, Column: l.column}
 	case ';':
-		tok = token.Token{Type: token.SEMICOLON, Value: ";", Line: l.line, Column: l.column}
+		tok = Token{Type: SEMICOLON, Value: ";", Line: l.line, Column: l.column}
 	case '?':
-		tok = token.Token{Type: token.QUESTION, Value: "?", Line: l.line, Column: l.column}
+		tok = Token{Type: QUESTION, Value: "?", Line: l.line, Column: l.column}
 	case '#':
-		tok = token.Token{Type: token.HASH, Value: "#", Line: l.line, Column: l.column}
+		tok = Token{Type: HASH, Value: "#", Line: l.line, Column: l.column}
 	case '$':
-		tok = token.Token{Type: token.DOLLAR, Value: "$", Line: l.line, Column: l.column}
+		tok = Token{Type: DOLLAR, Value: "$", Line: l.line, Column: l.column}
 	case '@':
-		tok = token.Token{Type: token.AT, Value: "@", Line: l.line, Column: l.column}
+		tok = Token{Type: AT, Value: "@", Line: l.line, Column: l.column}
 	case '"':
-		tok.Type = token.STR_LITERAL
+		tok.Type = STR_LITERAL
 		tok.Value = l.readString()
 		tok.Line = l.line
 		tok.Column = l.column
@@ -326,24 +324,24 @@ func (l *Lexer) NextToken() token.Token {
 		// 单个字符（包括转义字符）→ CHAR_LITERAL
 		// 多个字符或空字符串 → STR_LITERAL (视为字符串)
 		if len(value) == 1 {
-			tok.Type = token.CHAR_LITERAL
+			tok.Type = CHAR_LITERAL
 			tok.Value = value
 		} else {
 			// 多字符或空字符串，视为字符串字面量
-			tok.Type = token.STR_LITERAL
+			tok.Type = STR_LITERAL
 			tok.Value = value
 		}
 
 		l.readChar() // 跳过结束的 '
 		return tok   // 直接返回，不执行末尾的 readChar()
 	case '`':
-		tok = token.Token{Type: token.BACK_CHAR_LITERAL, Value: l.readBackCharLiteral(), Line: l.line, Column: l.column}
+		tok = Token{Type: BACK_CHAR_LITERAL, Value: l.readBackCharLiteral(), Line: l.line, Column: l.column}
 		l.readChar() // 跳过结束的 `
 		return tok   // 直接返回，不执行末尾的 readChar()
 	default:
 		if isLetter(l.ch) {
 			value := l.readIdentifier()
-			tokenType := token.LookupIdent(value)
+			tokenType := LookupIdent(value)
 
 			// 特殊处理 "not" 关键字
 			// 如果是 "not" 并且后面跟着 "in"，则识别为 NOT_IN
@@ -363,7 +361,7 @@ func (l *Lexer) NextToken() token.Token {
 					nextValue := l.readIdentifier()
 					if nextValue == "in" {
 						// 这是 "not in" 运算符
-						tok = token.Token{Type: token.NOT_IN, Value: "not in", Line: l.line, Column: l.column}
+						tok = Token{Type: NOT_IN, Value: "not in", Line: l.line, Column: l.column}
 						return tok
 					}
 					// 不是 "in"，需要回退到读取nextValue之前的位置
@@ -375,17 +373,17 @@ func (l *Lexer) NextToken() token.Token {
 				// 如果后面不是字母，不需要回退
 
 				// 单独的 "not" 作为逻辑非运算符
-				tokenType = token.NOT
+				tokenType = NOT
 			}
 
-			tok = token.Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
+			tok = Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
 			return tok // 不调用 readChar，因为 readIdentifier 已经移动了指针
 		} else if isDigit(l.ch) {
 			value, tokenType := l.readNumber()
-			tok = token.Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
+			tok = Token{Type: tokenType, Value: value, Line: l.line, Column: l.column}
 			return tok // 不调用 readChar，因为 readNumber 已经移动了指针
 		} else {
-			tok = token.Token{Type: token.ILLEGAL, Value: string(l.ch), Line: l.line, Column: l.column}
+			tok = Token{Type: ILLEGAL, Value: string(l.ch), Line: l.line, Column: l.column}
 		}
 	}
 
@@ -408,7 +406,7 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) readNumber() (string, token.TokenType) {
+func (l *Lexer) readNumber() (string, TokenType) {
 	position := l.position
 	base := 10
 	isFloat := false
@@ -481,14 +479,14 @@ func (l *Lexer) readNumber() (string, token.TokenType) {
 			l.readChar()
 		} else if l.ch == 'l' || l.ch == 'L' || l.ch == 'h' || l.ch == 'H' {
 			l.readChar()
-			return l.input[position:l.position], token.INT_LITERAL
+			return l.input[position:l.position], INT_LITERAL
 		}
 	}
 
 	if isFloat {
-		return l.input[position:l.position], token.FLT_LITERAL
+		return l.input[position:l.position], FLT_LITERAL
 	}
-	return l.input[position:l.position], token.INT_LITERAL
+	return l.input[position:l.position], INT_LITERAL
 }
 
 func isLetter(ch byte) bool {

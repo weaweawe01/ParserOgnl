@@ -1,10 +1,7 @@
-package parser
+package ast
 
 import (
 	"testing"
-
-	"github.com/weaweawe01/ParserOgnl/ast"
-	"github.com/weaweawe01/ParserOgnl/lexer"
 )
 
 func TestParseSimpleExpression(t *testing.T) {
@@ -25,7 +22,7 @@ func TestParseSimpleExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -75,7 +72,7 @@ func TestParseBinaryExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -112,7 +109,7 @@ func TestParseUnaryExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -145,7 +142,7 @@ func TestParseAssignmentExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -178,7 +175,7 @@ func TestParseConditionalExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -211,7 +208,7 @@ func TestParseSequenceExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -245,7 +242,7 @@ func TestParseChainExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -277,7 +274,7 @@ func TestParseInstanceofExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -311,7 +308,7 @@ func TestParseConstructorExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -344,7 +341,7 @@ func TestParseStaticExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -378,7 +375,7 @@ func TestParseArrayExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -411,7 +408,7 @@ func TestParseMapExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -448,7 +445,7 @@ func TestParseComplexExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.input)
+		l := NewLexer(tt.input)
 		p := New(l)
 		expr, err := p.ParseTopLevelExpression()
 		if err != nil {
@@ -473,7 +470,7 @@ func TestParseComplexExpression(t *testing.T) {
 // Benchmark tests
 func BenchmarkParseSimpleExpression(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		l := lexer.NewLexer("a + b * c")
+		l := NewLexer("a + b * c")
 		p := New(l)
 		p.ParseTopLevelExpression()
 	}
@@ -481,14 +478,14 @@ func BenchmarkParseSimpleExpression(b *testing.B) {
 
 func BenchmarkParseComplexExpression(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		l := lexer.NewLexer("obj.method(x, y).property.{? #this > 0}")
+		l := NewLexer("obj.method(x, y).property.{? #this > 0}")
 		p := New(l)
 		p.ParseTopLevelExpression()
 	}
 }
 
 // Helper function to check AST node types
-func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+func testLiteralExpression(t *testing.T, exp Expression, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
@@ -505,10 +502,10 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 	return false
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
-	literal, ok := il.(*ast.Literal)
+func testIntegerLiteral(t *testing.T, il Expression, value int64) bool {
+	literal, ok := il.(*Literal)
 	if !ok {
-		t.Errorf("il not *ast.Literal. got=%T", il)
+		t.Errorf("il not *Literal. got=%T", il)
 		return false
 	}
 
@@ -526,10 +523,10 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
-func testFloatLiteral(t *testing.T, fl ast.Expression, value float64) bool {
-	literal, ok := fl.(*ast.Literal)
+func testFloatLiteral(t *testing.T, fl Expression, value float64) bool {
+	literal, ok := fl.(*Literal)
 	if !ok {
-		t.Errorf("fl not *ast.Literal. got=%T", fl)
+		t.Errorf("fl not *Literal. got=%T", fl)
 		return false
 	}
 
@@ -547,10 +544,10 @@ func testFloatLiteral(t *testing.T, fl ast.Expression, value float64) bool {
 	return true
 }
 
-func testStringLiteral(t *testing.T, sl ast.Expression, value string) bool {
-	literal, ok := sl.(*ast.Literal)
+func testStringLiteral(t *testing.T, sl Expression, value string) bool {
+	literal, ok := sl.(*Literal)
 	if !ok {
-		t.Errorf("sl not *ast.Literal. got=%T", sl)
+		t.Errorf("sl not *Literal. got=%T", sl)
 		return false
 	}
 
@@ -568,10 +565,10 @@ func testStringLiteral(t *testing.T, sl ast.Expression, value string) bool {
 	return true
 }
 
-func testBooleanLiteral(t *testing.T, bl ast.Expression, value bool) bool {
-	literal, ok := bl.(*ast.Literal)
+func testBooleanLiteral(t *testing.T, bl Expression, value bool) bool {
+	literal, ok := bl.(*Literal)
 	if !ok {
-		t.Errorf("bl not *ast.Literal. got=%T", bl)
+		t.Errorf("bl not *Literal. got=%T", bl)
 		return false
 	}
 
@@ -589,10 +586,10 @@ func testBooleanLiteral(t *testing.T, bl ast.Expression, value bool) bool {
 	return true
 }
 
-func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
-	ident, ok := exp.(*ast.Identifier)
+func testIdentifier(t *testing.T, exp Expression, value string) bool {
+	ident, ok := exp.(*Identifier)
 	if !ok {
-		t.Errorf("exp not *ast.Identifier. got=%T", exp)
+		t.Errorf("exp not *Identifier. got=%T", exp)
 		return false
 	}
 

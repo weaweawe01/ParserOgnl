@@ -1,18 +1,16 @@
-package parser
+package ast
 
 import (
 	"fmt"
 	"strings"
-
-	"github.com/weaweawe01/ParserOgnl/ast"
 )
 
 // PrintASTStructure 打印详细的AST结构
-func PrintASTStructure(expr ast.Expression, depth int) {
+func PrintASTStructure(expr Expression, depth int) {
 	indent := strings.Repeat("  ", depth)
 
 	switch node := expr.(type) {
-	case *ast.BinaryExpression:
+	case *BinaryExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		fmt.Printf("%s    ", indent)
 		// 打印左子节点
@@ -20,28 +18,28 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 		fmt.Printf("%s    ", indent)
 		// 打印右子节点
 		printBinaryExpressionChild(node.Right, depth+1, node, true)
-	case *ast.UnaryExpression:
+	case *UnaryExpression:
 		// 一元表达式的片段只显示操作数,不包含运算符(与 Java OGNL 一致)
 		fmt.Printf("%s%s 表达式片段: %s\n", indent, node.Type(), node.Operand.String())
 		fmt.Printf("%s    ", indent)
 		PrintASTStructure(node.Operand, depth+1)
-	case *ast.Literal:
+	case *Literal:
 		fmt.Printf("%s 表达式片段: %s\n", node.Type(), node.String())
-	case *ast.LambdaLiteral:
+	case *LambdaLiteral:
 		// LambdaLiteral 是 ASTConst 类型，有一个子节点（Lambda body）
 		fmt.Printf("%s 表达式片段: %s\n", node.Type(), node.String())
 		if node.Body != nil {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Body, depth+1)
 		}
-	case *ast.Identifier:
+	case *Identifier:
 		fmt.Printf("%s 表达式片段: %s\n", node.Type(), node.Value)
 		// 打印 Identifier 的 NameNode 子节点 (对应Java的ASTConst)
 		if node.NameNode != nil {
 			fmt.Printf("%s   ", indent)
 			PrintASTStructure(node.NameNode, depth+1)
 		}
-	case *ast.ConditionalExpression:
+	case *ConditionalExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		fmt.Printf("%s    ", indent)
 		PrintASTStructure(node.Test, depth+1)
@@ -49,19 +47,19 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 		PrintASTStructure(node.Consequent, depth+1)
 		fmt.Printf("%s    ", indent)
 		PrintASTStructure(node.Alternative, depth+1)
-	case *ast.AssignmentExpression:
+	case *AssignmentExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		fmt.Printf("%s    ", indent)
 		PrintASTStructure(node.Left, depth+1)
 		fmt.Printf("%s    ", indent)
 		PrintASTStructure(node.Right, depth+1)
-	case *ast.SequenceExpression:
+	case *SequenceExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		for _, expr := range node.Expressions {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(expr, depth+1)
 		}
-	case *ast.ChainExpression:
+	case *ChainExpression:
 		if depth == 0 {
 			fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		} else {
@@ -72,7 +70,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(child, depth+1)
 		}
-	case *ast.IndexExpression:
+	case *IndexExpression:
 		// IndexExpression 是 ASTProperty 的 Go 实现
 		if node.Object == nil {
 			// 作为 ChainExpression 的子节点，只显示索引部分
@@ -91,7 +89,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(node.Index, depth+1)
 			}
 		}
-	case *ast.CallExpression:
+	case *CallExpression:
 		if depth == 0 {
 			fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		} else {
@@ -103,7 +101,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(arg, depth+1)
 			}
 		}
-	case *ast.StaticMethodExpression:
+	case *StaticMethodExpression:
 		if depth == 0 {
 			fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		} else {
@@ -115,7 +113,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(arg, depth+1)
 			}
 		}
-	case *ast.ArrayExpression:
+	case *ArrayExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if len(node.Elements) > 0 {
 			for _, elem := range node.Elements {
@@ -123,7 +121,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(elem, depth+1)
 			}
 		}
-	case *ast.MapExpression:
+	case *MapExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if len(node.Pairs) > 0 {
 			for _, pair := range node.Pairs {
@@ -131,7 +129,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(pair, depth+1)
 			}
 		}
-	case *ast.KeyValueExpression:
+	case *KeyValueExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if node.Key != nil {
 			fmt.Printf("%s    ", indent)
@@ -141,7 +139,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Value, depth+1)
 		}
-	case *ast.ConstructorExpression:
+	case *ConstructorExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if len(node.Arguments) > 0 {
 			for _, arg := range node.Arguments {
@@ -149,7 +147,7 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 				PrintASTStructure(arg, depth+1)
 			}
 		}
-	case *ast.EvalExpression:
+	case *EvalExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if node.Target != nil {
 			fmt.Printf("%s    ", indent)
@@ -159,37 +157,37 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Argument, depth+1)
 		}
-	case *ast.VariableExpression:
+	case *VariableExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
-	case *ast.ThisExpression:
+	case *ThisExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
-	case *ast.RootExpression:
+	case *RootExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
-	case *ast.SelectionExpression:
-		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
-		if node.Expression != nil {
-			fmt.Printf("%s    ", indent)
-			PrintASTStructure(node.Expression, depth+1)
-		}
-	case *ast.ProjectionExpression:
+	case *SelectionExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if node.Expression != nil {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Expression, depth+1)
 		}
-	case *ast.InstanceofExpression:
+	case *ProjectionExpression:
+		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
+		if node.Expression != nil {
+			fmt.Printf("%s    ", indent)
+			PrintASTStructure(node.Expression, depth+1)
+		}
+	case *InstanceofExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if node.Operand != nil {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Operand, depth+1)
 		}
-	case *ast.LambdaExpression:
+	case *LambdaExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		if node.Body != nil {
 			fmt.Printf("%s    ", indent)
 			PrintASTStructure(node.Body, depth+1)
 		}
-	case *ast.DynamicSubscriptExpression:
+	case *DynamicSubscriptExpression:
 		fmt.Printf("%s  %s 表达式片段: %s\n", indent, node.Type(), node.String())
 		// DynamicSubscriptExpression 没有子节点,只是一个特殊的下标标记
 	default:
@@ -202,11 +200,11 @@ func PrintASTStructure(expr ast.Expression, depth int) {
 }
 
 // printBinaryExpressionChild 打印二元表达式的子节点,考虑父节点上下文
-func printBinaryExpressionChild(expr ast.Expression, depth int, parentBinary *ast.BinaryExpression, isRightChild bool) {
+func printBinaryExpressionChild(expr Expression, depth int, parentBinary *BinaryExpression, isRightChild bool) {
 	indent := strings.Repeat("  ", depth)
 
 	// 如果是二元表达式,使用 StringWithContext
-	if binExpr, ok := expr.(*ast.BinaryExpression); ok {
+	if binExpr, ok := expr.(*BinaryExpression); ok {
 		exprStr := binExpr.StringWithContext(parentBinary.GetPrecedence(), isRightChild)
 		fmt.Printf("%s 表达式片段: %s\n", binExpr.Type(), exprStr)
 		// 递归打印子节点

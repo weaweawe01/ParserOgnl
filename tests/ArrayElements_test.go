@@ -3,9 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/weaweawe01/ParserOgnl/lexer"
-
-	"github.com/weaweawe01/ParserOgnl/parser"
+	"github.com/weaweawe01/ParserOgnl/ast"
 )
 
 // TestArrayLiteralBasic 测试基本的数组字面量语法
@@ -48,8 +46,8 @@ func TestArrayLiteralBasic(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
@@ -121,8 +119,8 @@ func TestArrayAccess(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
@@ -177,8 +175,8 @@ func TestCharArray(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
@@ -231,8 +229,8 @@ func TestBooleanArray(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
@@ -296,8 +294,8 @@ func TestArrayNestedConstructor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
@@ -345,8 +343,8 @@ func TestArrayExpressionOutput(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := lexer.NewLexer(tt.input)
-			p := parser.New(l)
+			l := ast.NewLexer(tt.input)
+			p := ast.New(l)
 			expr, err := p.ParseTopLevelExpression()
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)

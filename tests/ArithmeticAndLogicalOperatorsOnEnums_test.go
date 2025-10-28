@@ -4,9 +4,6 @@ import (
 	"testing"
 
 	"github.com/weaweawe01/ParserOgnl/ast"
-
-	"github.com/weaweawe01/ParserOgnl/lexer"
-	"github.com/weaweawe01/ParserOgnl/parser"
 )
 
 // 模拟枚举类型 (Go 中使用 iota 实现)
@@ -44,8 +41,8 @@ func (e EnumBasicBody) Value() int {
 
 // 辅助函数: 解析 OGNL 表达式
 func parseExpression(t *testing.T, input string) ast.Expression {
-	l := lexer.NewLexer(input)
-	p := parser.New(l)
+	l := ast.NewLexer(input)
+	p := ast.New(l)
 	expr, err := p.ParseTopLevelExpression()
 
 	if err != nil {

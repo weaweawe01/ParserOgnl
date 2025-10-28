@@ -1,10 +1,8 @@
-package parser
+package ast
 
 import (
 	"strings"
 	"testing"
-
-	"github.com/weaweawe01/ParserOgnl/lexer"
 )
 
 // TestMaxParseIterations 测试最大解析迭代次数保护机制
@@ -12,7 +10,7 @@ func TestMaxParseIterations(t *testing.T) {
 	t.Run("Normal expression within limit", func(t *testing.T) {
 		// 正常的链式表达式，不会超过限制
 		input := "a.b.c.d.e.f.g.h.i.j"
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
@@ -36,7 +34,7 @@ func TestMaxParseIterations(t *testing.T) {
 		}
 		input := "obj." + strings.Join(parts, ".")
 
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
@@ -63,7 +61,7 @@ func TestMaxParseIterations(t *testing.T) {
 		}
 		input := builder.String()
 
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
@@ -86,7 +84,7 @@ func TestMaxParseIterations(t *testing.T) {
 		}
 		input := "x." + strings.Join(parts, ".")
 
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
@@ -118,7 +116,7 @@ func TestMaxParseIterations(t *testing.T) {
 		}
 		input := builder.String()
 
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
@@ -137,7 +135,7 @@ func TestIterationCounterReset(t *testing.T) {
 	input := "a.b.c.d.e"
 
 	// 第一次解析
-	l1 := lexer.NewLexer(input)
+	l1 := NewLexer(input)
 	p1 := New(l1)
 	_, err1 := p1.ParseTopLevelExpression()
 	if err1 != nil {
@@ -147,7 +145,7 @@ func TestIterationCounterReset(t *testing.T) {
 	t.Logf("First parse used %d iterations", count1)
 
 	// 第二次解析（新的 Parser 实例）
-	l2 := lexer.NewLexer(input)
+	l2 := NewLexer(input)
 	p2 := New(l2)
 	_, err2 := p2.ParseTopLevelExpression()
 	if err2 != nil {
@@ -177,7 +175,7 @@ func BenchmarkParseChainLength(b *testing.B) {
 		b.Run(string(rune(length))+" properties", func(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				l := lexer.NewLexer(input)
+				l := NewLexer(input)
 				p := New(l)
 				_, err := p.ParseTopLevelExpression()
 				if err != nil {
@@ -192,7 +190,7 @@ func BenchmarkParseChainLength(b *testing.B) {
 func TestIterationLimitEffectiveness(t *testing.T) {
 	t.Run("Iteration counter increases during parsing", func(t *testing.T) {
 		input := "a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p"
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		// 解析前计数器应该为 0
@@ -218,7 +216,7 @@ func TestIterationLimitEffectiveness(t *testing.T) {
 	t.Run("Check iteration limit in navigation loop", func(t *testing.T) {
 		// 创建一个会进入 navigationLoop 的表达式
 		input := "obj.a.b.c.d.e.f.g.h.i.j"
-		l := lexer.NewLexer(input)
+		l := NewLexer(input)
 		p := New(l)
 
 		expr, err := p.ParseTopLevelExpression()
