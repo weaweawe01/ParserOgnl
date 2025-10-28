@@ -234,7 +234,7 @@ func TestGenerics(t *testing.T) {
 						},
 					},
 					{
-						Type:     "ASTSelectFirst",
+						Type:     "ASTSelect",
 						Fragment: "{? (#this.id > 100)}",
 						Children: []ExpectedNode{
 							{

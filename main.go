@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	input := "new ognl.test.objects.Simple(new Object[5])"
+	input := "(#context=#attr['struts.valueStack'].context).(#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.setExcludedClasses('')).(#ognlUtil.setExcludedPackageNames(''))"
 	fmt.Println("输入表达式:", input)
 	// 创建词法分析器和解析器
 	l := ast.NewLexer(input)

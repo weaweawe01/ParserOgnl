@@ -174,7 +174,7 @@ func TestConstantTree(t *testing.T) {
 						},
 					},
 					{
-						Type:     "ASTSelectFirst",
+						Type:     "ASTSelect",
 						Fragment: "{? foo}",
 						Children: []ExpectedNode{
 							{

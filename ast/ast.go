@@ -6,7 +6,7 @@ import (
 )
 
 func Version() string {
-	return "v1.0.1"
+	return "v1.0.2"
 }
 
 // Node AST节点接口
@@ -611,7 +611,16 @@ func (se *SelectionExpression) String() string {
 	}
 }
 
-func (se *SelectionExpression) Type() string { return "ASTSelectFirst" }
+func (se *SelectionExpression) Type() string {
+	switch se.SelectType {
+	case "first":
+		return "ASTSelectFirst"
+	case "last":
+		return "ASTSelectLast"
+	default: // "all"
+		return "ASTSelect"
+	}
+}
 
 // needsParenthesesInSelection 判断在 Selection 中是否需要括号
 func needsParenthesesInSelection(expr Expression) bool {

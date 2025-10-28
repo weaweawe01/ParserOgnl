@@ -402,7 +402,13 @@ func (p *Parser) parseNavigationChain() Expression {
 func (p *Parser) parseNavigationChainContinue(left Expression) Expression {
 	// 收集所有链式操作的子节点
 	var children []Expression
-	children = append(children, left)
+
+	// 如果 left 本身就是 ChainExpression，扁平化它的子节点
+	if chain, ok := left.(*ChainExpression); ok {
+		children = append(children, chain.Children...)
+	} else {
+		children = append(children, left)
+	}
 
 navigationLoop:
 	for p.isNavigationOperator(p.current.Type) {
@@ -416,7 +422,12 @@ navigationLoop:
 			// DOT 已经是当前 token，解析右侧的属性或方法
 			right := p.parseChainRightSide()
 			if right != nil {
-				children = append(children, right)
+				// 如果 right 是 ChainExpression，扁平化其子节点
+				if chain, ok := right.(*ChainExpression); ok {
+					children = append(children, chain.Children...)
+				} else {
+					children = append(children, right)
+				}
 			} else {
 				// 如果 parseChainRightSide 返回 nil，说明遇到错误
 				// 必须退出循环，否则会死循环
@@ -805,7 +816,7 @@ func (p *Parser) parseProjectionOrSelection(object Expression) Expression {
 	p.nextToken() // consume {
 
 	if p.currentTokenIs(QUESTION) {
-		// 选择表达式 {? expr}
+		// 选择表达式 {? expr} - 选择所有匹配的元素
 		p.nextToken()                         // move to expression
 		expr := p.parseAssignmentExpression() // Use parseAssignmentExpression to avoid comma-sequence handling
 		if p.current.Type != RBRACE {
@@ -817,6 +828,34 @@ func (p *Parser) parseProjectionOrSelection(object Expression) Expression {
 			Object:     object,
 			Expression: expr,
 			SelectType: "all",
+		}
+	} else if p.currentTokenIs(XOR) {
+		// 选择表达式 {^ expr} - 选择第一个匹配的元素
+		p.nextToken() // move to expression
+		expr := p.parseAssignmentExpression()
+		if p.current.Type != RBRACE {
+			p.currentError(fmt.Sprintf("expected } after selection expression, got %s", TokenTypeNames[p.current.Type]))
+			return nil
+		}
+		p.nextToken() // consume }
+		return &SelectionExpression{
+			Object:     object,
+			Expression: expr,
+			SelectType: "first",
+		}
+	} else if p.currentTokenIs(DOLLAR) {
+		// 选择表达式 {$ expr} - 选择最后一个匹配的元素
+		p.nextToken() // move to expression
+		expr := p.parseAssignmentExpression()
+		if p.current.Type != RBRACE {
+			p.currentError(fmt.Sprintf("expected } after selection expression, got %s", TokenTypeNames[p.current.Type]))
+			return nil
+		}
+		p.nextToken() // consume }
+		return &SelectionExpression{
+			Object:     object,
+			Expression: expr,
+			SelectType: "last",
 		}
 	} else {
 		// 投影表达式 {expr}

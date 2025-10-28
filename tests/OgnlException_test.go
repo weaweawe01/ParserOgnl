@@ -250,7 +250,7 @@ func TestOgnlException(t *testing.T) {
 						},
 					},
 					{
-						Type:     "ASTSelectFirst",
+						Type:     "ASTSelect",
 						Fragment: "{? invalid}",
 						Children: []ExpectedNode{
 							{
